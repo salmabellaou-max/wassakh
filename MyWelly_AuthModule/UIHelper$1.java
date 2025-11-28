@@ -1,0 +1,24 @@
+import java.awt.event.MouseEvent;
+import javax.swing.JButton;
+import java.awt.Color;
+import java.awt.event.MouseAdapter;
+
+// 
+// Decompiled by Procyon v0.6.0
+// 
+
+class UIHelper$1 extends MouseAdapter {
+    Color originalBg = this.val$bgColor;
+    final /* synthetic */ Color val$bgColor;
+    final /* synthetic */ JButton val$button;
+    
+    @Override
+    public void mouseEntered(final MouseEvent e) {
+        this.val$button.setBackground(UIConstants.HOVER_GREEN);
+    }
+    
+    @Override
+    public void mouseExited(final MouseEvent e) {
+        this.val$button.setBackground(this.originalBg);
+    }
+}
