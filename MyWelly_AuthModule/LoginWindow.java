@@ -221,11 +221,15 @@ class LoginWindow extends JFrame
         final JDialog loadingDialog = UIHelper.showLoadingDialog(this, "Signing in...");
         new Thread(() -> {
             try {
-                Thread.sleep(1500L);
+                // Authenticate user with database
+                AuthenticationService authService = new AuthenticationService();
+                UserEntity user = authService.login(username, password);
+
+                // Login successful, navigate to dashboard
                 SwingUtilities.invokeLater(() -> {
                     loadingDialog.dispose();
                     this.dispose();
-                    new DashboardWindow("Patient", username).setVisible(true);
+                    new DashboardWindow(user.getUserType().name(), user.getUserName()).setVisible(true);
                 });
             }
             catch (final Exception e) {

@@ -23,6 +23,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.JFrame;
+import java.util.List;
 
 // 
 // Decompiled by Procyon v0.6.0
@@ -106,9 +107,90 @@ class SearchDoctorsWindow extends JFrame
     }
     
     private void performSearch() {
-        this.showSampleResults();
+        // Build search filters from UI components
+        SearchFilters filters = new SearchFilters();
+
+        String searchText = this.searchField.getText().trim();
+        if (!searchText.isEmpty()) {
+            filters.setSearchQuery(searchText);
+            filters.setSearchType("specialty");  // Can be extended to switch between name/specialty
+        }
+
+        String selectedCity = (String) this.cityCombo.getSelectedItem();
+        if (selectedCity != null && !selectedCity.equals("All Cities")) {
+            filters.setCity(selectedCity);
+        }
+
+        String selectedCertificate = (String) this.certificateCombo.getSelectedItem();
+        if (selectedCertificate != null && !selectedCertificate.equals("Any Certificate")) {
+            filters.addCertificateName(selectedCertificate);
+        }
+
+        // Set other filters as needed
+        filters.setAcceptingPatients(this.acceptingPatientsCheck.isSelected());
+
+        // Perform search in background thread
+        new Thread(() -> {
+            try {
+                SearchService searchService = new SearchService();
+                List<Doctor> doctors = searchService.searchDoctors(filters);
+
+                // Update UI on EDT
+                javax.swing.SwingUtilities.invokeLater(() -> this.showSearchResults(doctors));
+            } catch (Exception e) {
+                javax.swing.SwingUtilities.invokeLater(() -> {
+                    this.resultsPanel.removeAll();
+                    JLabel errorLabel = new JLabel("Error searching doctors: " + e.getMessage());
+                    errorLabel.setFont(new Font("Segoe UI", 0, 16));
+                    errorLabel.setForeground(Color.RED);
+                    this.resultsPanel.add(errorLabel);
+                    this.resultsPanel.revalidate();
+                    this.resultsPanel.repaint();
+                });
+            }
+        }).start();
     }
-    
+
+    private void showSearchResults(List<Doctor> doctors) {
+        this.resultsPanel.removeAll();
+
+        if (doctors.isEmpty()) {
+            JLabel noResultsLabel = new JLabel("No doctors found matching your criteria");
+            noResultsLabel.setFont(new Font("Segoe UI", 0, 18));
+            noResultsLabel.setForeground(Color.GRAY);
+            this.resultsPanel.add(noResultsLabel);
+        } else {
+            JLabel resultsLabel = new JLabel("Showing " + doctors.size() + " doctor" + (doctors.size() > 1 ? "s" : ""));
+            resultsLabel.setFont(new Font("Segoe UI", 1, 16));
+            resultsLabel.setForeground(Color.GRAY);
+            this.resultsPanel.add(resultsLabel);
+            this.resultsPanel.add(Box.createVerticalStrut(20));
+
+            for (Doctor doctor : doctors) {
+                String certificateText = "";
+                if (doctor.getCertificates() != null && !doctor.getCertificates().isEmpty()) {
+                    certificateText = doctor.getCertificates().get(0).getName();
+                } else {
+                    certificateText = "Medical Degree";
+                }
+
+                this.resultsPanel.add(this.createModernDoctorCard(
+                    doctor.getFullName(),
+                    doctor.getSpecialty(),
+                    doctor.getClinicName() + " \u2022 " + doctor.getCity(),
+                    String.format("%.1f", doctor.getRating()),
+                    String.format("%.0f MAD", doctor.getConsultationFees()),
+                    doctor.getYearsOfExperience() + " years",
+                    certificateText
+                ));
+                this.resultsPanel.add(Box.createVerticalStrut(18));
+            }
+        }
+
+        this.resultsPanel.revalidate();
+        this.resultsPanel.repaint();
+    }
+
     private void showSampleResults() {
         this.resultsPanel.removeAll();
         final JLabel resultsLabel = new JLabel("Showing 15 doctors");
@@ -194,12 +276,12 @@ class SearchDoctorsWindow extends JFrame
         viewButton.setAlignmentX(1.0f);
         rightPanel.add(viewButton);
         card.add(rightPanel, "East");
-        card.addMouseListener(new MouseAdapter(this) {
+        card.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(final MouseEvent e) {
                 card.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(UIConstants.LIGHT_GREEN, 2, true), BorderFactory.createEmptyBorder(24, 24, 24, 24)));
             }
-            
+
             @Override
             public void mouseExited(final MouseEvent e) {
                 card.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(230, 230, 230), 1, true), BorderFactory.createEmptyBorder(25, 25, 25, 25)));

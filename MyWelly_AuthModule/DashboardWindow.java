@@ -188,9 +188,9 @@ class DashboardWindow extends JFrame
         actionsPanel.setBackground(UIConstants.SOFT_GRAY);
         actionsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
         actionsPanel.add(UIHelper.createActionButton("\ud83d\udd0d  Find a Doctor", e -> this.showSearchDoctors()));
-        actionsPanel.add(UIHelper.createActionButton("\ud83d\udcc5  Book Appointment", e -> {}));
+        actionsPanel.add(UIHelper.createActionButton("\ud83d\udcc5  Book Appointment", e -> this.showBookAppointment()));
         actionsPanel.add(UIHelper.createActionButton("\ud83d\udccb  View Records", e -> this.showMedicalRecords()));
-        actionsPanel.add(UIHelper.createActionButton("\ud83d\udcac  Contact Support", e -> {}));
+        actionsPanel.add(UIHelper.createActionButton("\ud83d\udcac  Contact Support", e -> this.showContactSupport()));
         content.add(actionsPanel);
         content.add(Box.createVerticalStrut(35));
         final JLabel recentLabel = new JLabel("Recent Activity");
@@ -324,6 +324,113 @@ class DashboardWindow extends JFrame
         panel.setBackground(UIConstants.SOFT_GRAY);
         panel.add(label);
         this.contentArea.add(panel, "Center");
+        this.contentArea.revalidate();
+        this.contentArea.repaint();
+    }
+
+    private void showBookAppointment() {
+        this.contentArea.removeAll();
+        final JPanel content = new JPanel();
+        content.setLayout(new BoxLayout(content, 1));
+        content.setBackground(UIConstants.SOFT_GRAY);
+        content.setBorder(BorderFactory.createEmptyBorder(35, 35, 35, 35));
+
+        final JLabel titleLabel = new JLabel("Book an Appointment");
+        titleLabel.setFont(UIConstants.HEADER_FONT);
+        titleLabel.setForeground(UIConstants.PRIMARY_GREEN);
+        content.add(titleLabel);
+        content.add(Box.createVerticalStrut(20));
+
+        final JLabel infoLabel = new JLabel("<html>To book an appointment:<br><br>" +
+                "1. Use 'Search Doctors' to find a doctor<br>" +
+                "2. Click 'View Profile' on a doctor card<br>" +
+                "3. Select an available time slot<br><br>" +
+                "This feature is being implemented.</html>");
+        infoLabel.setFont(new Font("Segoe UI", 0, 16));
+        infoLabel.setForeground(Color.GRAY);
+        content.add(infoLabel);
+        content.add(Box.createVerticalStrut(30));
+
+        final JButton searchButton = UIHelper.createStyledButton("Search Doctors Now", UIConstants.PRIMARY_GREEN, Color.WHITE);
+        searchButton.setMaximumSize(new Dimension(250, 50));
+        searchButton.setAlignmentX(0.0f);
+        searchButton.addActionListener(e -> this.showSearchDoctors());
+        content.add(searchButton);
+
+        content.add(Box.createVerticalGlue());
+
+        final JScrollPane scrollPane = new JScrollPane(content);
+        scrollPane.setBorder(null);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        this.contentArea.add(scrollPane, "Center");
+        this.contentArea.revalidate();
+        this.contentArea.repaint();
+    }
+
+    private void showContactSupport() {
+        this.contentArea.removeAll();
+        final JPanel content = new JPanel();
+        content.setLayout(new BoxLayout(content, 1));
+        content.setBackground(UIConstants.SOFT_GRAY);
+        content.setBorder(BorderFactory.createEmptyBorder(35, 35, 35, 35));
+
+        final JLabel titleLabel = new JLabel("Contact Support");
+        titleLabel.setFont(UIConstants.HEADER_FONT);
+        titleLabel.setForeground(UIConstants.PRIMARY_GREEN);
+        content.add(titleLabel);
+        content.add(Box.createVerticalStrut(30));
+
+        final JPanel contactPanel = new JPanel();
+        contactPanel.setLayout(new BoxLayout(contactPanel, 1));
+        contactPanel.setBackground(Color.WHITE);
+        contactPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(230, 230, 230), 1, true),
+            BorderFactory.createEmptyBorder(30, 30, 30, 30)
+        ));
+        contactPanel.setMaximumSize(new Dimension(600, Integer.MAX_VALUE));
+        contactPanel.setAlignmentX(0.0f);
+
+        final JLabel emailLabel = new JLabel("\ud83d\udce7 Email: support@mywelly.ma");
+        emailLabel.setFont(new Font("Segoe UI", 0, 18));
+        emailLabel.setForeground(UIConstants.PRIMARY_GREEN);
+        contactPanel.add(emailLabel);
+        contactPanel.add(Box.createVerticalStrut(20));
+
+        final JLabel phoneLabel = new JLabel("\ud83d\udcde Phone: +212 5XX-XXXXXX");
+        phoneLabel.setFont(new Font("Segoe UI", 0, 18));
+        phoneLabel.setForeground(UIConstants.PRIMARY_GREEN);
+        contactPanel.add(phoneLabel);
+        contactPanel.add(Box.createVerticalStrut(20));
+
+        final JLabel hoursLabel = new JLabel("\ud83d\udd52 Hours: Mon-Fri, 9:00 AM - 6:00 PM");
+        hoursLabel.setFont(new Font("Segoe UI", 0, 18));
+        hoursLabel.setForeground(UIConstants.PRIMARY_GREEN);
+        contactPanel.add(hoursLabel);
+        contactPanel.add(Box.createVerticalStrut(30));
+
+        final JSeparator separator = new JSeparator();
+        separator.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
+        contactPanel.add(separator);
+        contactPanel.add(Box.createVerticalStrut(30));
+
+        final JLabel messageLabel = new JLabel("Send us a message:");
+        messageLabel.setFont(new Font("Segoe UI", 1, 16));
+        messageLabel.setForeground(UIConstants.PRIMARY_GREEN);
+        contactPanel.add(messageLabel);
+        contactPanel.add(Box.createVerticalStrut(15));
+
+        final JLabel noteLabel = new JLabel("<html>Contact form feature is under development.<br>Please use email or phone for now.</html>");
+        noteLabel.setFont(new Font("Segoe UI", 2, 14));
+        noteLabel.setForeground(Color.GRAY);
+        contactPanel.add(noteLabel);
+
+        content.add(contactPanel);
+        content.add(Box.createVerticalGlue());
+
+        final JScrollPane scrollPane = new JScrollPane(content);
+        scrollPane.setBorder(null);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        this.contentArea.add(scrollPane, "Center");
         this.contentArea.revalidate();
         this.contentArea.repaint();
     }
