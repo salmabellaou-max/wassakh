@@ -34,3 +34,4 @@ Thumbs.db
 # *.properties
 # *.yml
 # *.yaml
+*.class

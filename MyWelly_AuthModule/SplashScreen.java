@@ -68,14 +68,14 @@ class SplashScreen extends JWindow
     
     public void showSplash() {
         this.setVisible(true);
-        this.logoPanel.startDrawing();
+        // Logo is now displayed immediately without animation
         new Thread(() -> {
             try {
                 for (int i = 0; i <= 100; ++i) {
                     final int progress = i;
                     SwingUtilities.invokeLater(() -> {
                         this.progressBar.setValue(progress);
-                        this.progressBar.setString("Loading " + progress);
+                        this.progressBar.setString("Loading " + progress + "%");
                         return;
                     });
                     Thread.sleep(35L);
